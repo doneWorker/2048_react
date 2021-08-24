@@ -1,0 +1,21 @@
+.board {
+  width: 800px;
+  height: 800px;
+  margin: 20px auto;
+  background-color: #bbac9f;
+}
+.gridCell {
+  width: 180px;
+  height: 180px;
+  float: left;
+  margin-left: 15px;
+  margin-top: 15px;
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5);
+  background-color: rgba(238, 228, 218, 0.35);
+}
+.tile {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: grey;
+}
