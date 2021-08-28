@@ -41,11 +41,82 @@ function getNextTile(matrix) {
   const possibleNumbers = [2, 4],
     randomNumber =
       possibleNumbers[getRandomIntInclusive(0, possibleNumbers.length - 1)],
-    freeCells = getFreeCells(matrix),
-    position = freeCells[getRandomIntInclusive(0, freeCells.length - 1)];
+    freeCells = getFreeCells(matrix);
 
-  return [randomNumber, position];
+  if (freeCells.length > 0) {
+    const position = freeCells[getRandomIntInclusive(0, freeCells.length - 1)];
+    return [randomNumber, position];
+  } else {
+    return [0, 0];
+  }
 }
+
+// in state
+/*
+const state = [
+    0, 2, 0, 0,
+    2, 0, 0, 0,
+    4, 0, 4, 0,
+    8, 0, 0, 0
+]
+
+const state = [
+    2, 0, 0, 0,
+    2, 0, 0, 0,
+    4, 4, 0, 0,
+    8, 0, 0, 0
+]
+*/
+// TODO: optimize merging
+function merge(state, dir = "LEFT") {
+  // const state = [0, 2, 0, 0, 2, 0, 0, 0, 4, 0, 4, 0, 8, 0, 0, 0];
+  const w = 4;
+
+  const getRows = (board) => {
+    let rows = [];
+    let currentRow = [];
+    board.forEach((item, idx) => {
+      currentRow.push(item);
+      if ((idx + 1) % w === 0) {
+        rows.push(currentRow);
+        currentRow = [];
+      }
+    });
+
+    return rows;
+  };
+
+  const rows = getRows(state);
+  const cols = [];
+
+  return rows
+    .map((row) => {
+      let updatedRow = [];
+      let lastNum = 0;
+      row.forEach((item) => {
+        if (item === 0) {
+          return;
+        } else if (item === lastNum) {
+          updatedRow[updatedRow.length - 1] = item * 2;
+          lastNum = 0;
+        } else {
+          updatedRow.push(item);
+          lastNum = item;
+        }
+      });
+
+      let r =
+        updatedRow.length < w
+          ? [...updatedRow, ...new Array(w - updatedRow.length).fill(0)]
+          : updatedRow;
+
+      console.log(r);
+      return r;
+    })
+    .flat();
+}
+
+// console.log(merge());
 
 // COMPONENTS
 function Tile({ index, value }) {
@@ -81,21 +152,32 @@ function Board({ children }) {
 export default function Game() {
   const [tiles, setTiles] = useState(new Array(BOARD_SIZE).fill(0));
 
-  useEffect(() => {
+  const addNewTile = function () {
     setTiles((prevState) => {
-      const [num, pos] = getNextTile(tiles);
-      let newState = [...prevState];
+      console.log("prevState", prevState);
+      const [num, pos] = getNextTile(prevState);
+      if (num === 0) return;
+      let newState = merge(prevState);
       newState[pos] = num;
       return newState;
     });
-  }, []);
+  };
 
-  console.log(tiles);
+  const moveUp = () => {};
+
+  const moveRight = () => {};
+
+  const moveLeft = () => {};
+
+  const moveDown = () => {};
+
   return (
-    <Board size={BOARD_SIZE}>
-      {tiles.map((el, idx) => {
-        return el !== 0 && <Tile index={idx} key={idx} value={el} />;
-      })}
-    </Board>
+    <div onClick={addNewTile}>
+      <Board size={BOARD_SIZE}>
+        {tiles.map((el, idx) => {
+          return el !== 0 && <Tile index={idx} key={idx} value={el} />;
+        })}
+      </Board>
+    </div>
   );
 }
