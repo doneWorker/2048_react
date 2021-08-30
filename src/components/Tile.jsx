@@ -20,19 +20,25 @@ function getTilePosition(
   };
 }
 
-export default function Tile({ index, value }) {
-  const [pos, setPos] = useState(getTilePosition(index));
+export default function Tile({ index, value, from }) {
+  const [offset, setOffset] = useState(null);
 
   useEffect(() => {
-    setPos(() => getTilePosition(index));
-  }, [index]);
+    let fromOffset = getTilePosition(from || index);
+    let toOffset = getTilePosition(index);
+
+    setOffset(fromOffset);
+    setTimeout(() => setOffset(toOffset), 100);
+  }, [from, index]);
 
   return (
-    <div
-      className={styles.tile}
-      style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
-    >
-      {value}
-    </div>
+    offset && (
+      <div
+        className={styles.tile}
+        style={{ left: `${offset.x}px`, top: `${offset.y}px` }}
+      >
+        {value}
+      </div>
+    )
   );
 }

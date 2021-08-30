@@ -1,4 +1,4 @@
-import { flatVertical, getCols } from "./index";
+import { flatVertical, getCols, generateBoard, addNewTile } from "./index";
 
 const input = [0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0];
 
@@ -20,4 +20,17 @@ test("flatVertical working properly", () => {
   let out = flatVertical(cols);
 
   expect(out).toEqual(input);
+});
+
+test("generateBoard working properly", () => {
+  let board = generateBoard(3, 3);
+  expect(board).toEqual([null, null, null, null, null, null, null, null, null]);
+});
+
+test("mergeVertical working properly", () => {
+  let board = generateBoard(3, 3);
+  board[4] = { value: 4 };
+  board[7] = { value: 4 };
+
+  expect(board[0]).toEqual(4);
 });
