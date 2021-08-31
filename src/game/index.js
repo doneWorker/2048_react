@@ -83,7 +83,7 @@ export function generateBoard(width = WIDTH, height = HEIGHT) {
 
 export function getFreePlace(board) {
   let freeCells = board.map((row, idx) => row === null && idx);
-  return freeCells[getRandomIntInclusive(0, freeCells.length)];
+  return freeCells[getRandomIntInclusive(0, freeCells.length - 1)];
 }
 
 function getRandomTileValue() {
@@ -109,16 +109,18 @@ export function mergeTiles(board, dir = LEFT) {
 
 export function mergeVertical(board, dir) {
   let cols = getCols(board);
+  let score = 0;
 
-  return flatVertical(
+  let newBoard = flatVertical(
     cols.map((col, colIdx) => {
       let updatedCol = [];
       let lastNum;
 
       col.forEach((tile, tileIdx) => {
-        if (tile === null) { return }
-
-        if (tile.value === lastNum) {
+        if (tile === null) {
+          return;
+        } else if (tile.value === lastNum) {
+          score += tile.value * 2;
           updatedCol[updatedCol.length - 1].value = tile.value * 2;
           updatedCol[updatedCol.length - 1].from = tileIdx * HEIGHT + colIdx;
           tile.populated = false;
@@ -134,25 +136,29 @@ export function mergeVertical(board, dir) {
 
       let padding = new Array(HEIGHT - updatedCol.length).fill(null);
       return updatedCol.length === HEIGHT
-          ? updatedCol
-          : dir === UP
-          ? [...updatedCol, ...padding]
-          : dir === DOWN
-          ? [...padding, ...updatedCol]
-          : null;
+        ? updatedCol
+        : dir === UP
+        ? [...updatedCol, ...padding]
+        : dir === DOWN
+        ? [...padding, ...updatedCol]
+        : null;
     })
   );
+
+  return [score, newBoard];
 }
 
 export function mergeHorizontal(board, dir) {
   let newBoard = [];
   let row = [];
+  let score = 0;
 
   // move & merge
   board.forEach((tile, idx) => {
     if (tile !== null) {
       // same tiles in row
       if (row.length > 0 && tile.value === row[row.length - 1].value) {
+        score += tile.value * 2;
         row[row.length - 1] = {
           ...tile,
           ...{ from: idx, value: tile.value * 2 },
@@ -171,5 +177,5 @@ export function mergeHorizontal(board, dir) {
     }
   });
 
-  return newBoard.flat();
+  return [score, newBoard.flat()];
 }

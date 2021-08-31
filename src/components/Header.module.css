@@ -1,0 +1,17 @@
+.header {
+  width: 800px;
+  height: 100px;
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px auto;
+  padding: 10px;
+  background: var(--boardBg);
+}
+.button {
+  border: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 0 2em;
+  color: var(--tileColor);
+  background: var(--tileBg);
+}

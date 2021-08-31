@@ -1,0 +1,9 @@
+.score {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+  padding: 10px;
+}
+.value {
+  font-size: 1.1em;
+}
