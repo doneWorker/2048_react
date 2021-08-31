@@ -15,6 +15,24 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+export function getTilePosition(
+  index,
+  boardSize = BOARD_SIZE,
+  tileSize = TILE_SIZE,
+  margin = TILE_OFFSET
+) {
+  const w = boardSize / 4,
+    r = index % w,
+    c = Math.floor(index / w),
+    mx = margin * (r + 1),
+    my = margin * (c + 1);
+
+  return {
+    x: mx + r * tileSize,
+    y: my + c * tileSize,
+  };
+}
+
 export function getCols(board) {
   let cols = new Array(HEIGHT).fill(0).map(() => []);
 
@@ -52,71 +70,6 @@ export function flatVertical(cols) {
 }
 
 // TODO: optimize merge
-export function merge(state, dir = "LEFT") {
-  const rows = getRows(state);
-  const cols = getCols(state);
-
-  return dir === "LEFT" || dir === "RIGHT"
-    ? rows
-        .map((row) => {
-          let updatedRow = [];
-          let lastNum = 0;
-          row.forEach((item) => {
-            if (item === 0) {
-              return;
-            } else if (item === lastNum) {
-              updatedRow[updatedRow.length - 1] = item * 2;
-              lastNum = 0;
-            } else {
-              updatedRow.push(item);
-              lastNum = item;
-            }
-          });
-
-          let padding = new Array(WIDTH - updatedRow.length).fill(0);
-          let outputRows =
-            updatedRow.length === WIDTH
-              ? updatedRow
-              : dir === "LEFT"
-              ? [...updatedRow, ...padding]
-              : dir === "RIGHT"
-              ? [...padding, ...updatedRow]
-              : null;
-
-          return outputRows;
-        })
-        .flat()
-    : flatVertical(
-        cols.map((col) => {
-          let updatedCol = [];
-          let lastNum = 0;
-          col.forEach((item) => {
-            if (item === 0) {
-              return;
-            } else if (item === lastNum) {
-              updatedCol[updatedCol.length - 1] = item * 2;
-              lastNum = 0;
-            } else {
-              updatedCol.push(item);
-              lastNum = item;
-            }
-          });
-
-          let padding = new Array(HEIGHT - updatedCol.length).fill(0);
-          let outputCols =
-            updatedCol.length === HEIGHT
-              ? updatedCol
-              : dir === "UP"
-              ? [...updatedCol, ...padding]
-              : dir === "DOWN"
-              ? [...padding, ...updatedCol]
-              : null;
-
-          return outputCols;
-        })
-      );
-}
-
 export function generateBoard(width = WIDTH, height = HEIGHT) {
   let out = [];
   for (let i = 0; i < height; i++) {
@@ -155,7 +108,6 @@ export function mergeTiles(board, dir = LEFT) {
 }
 
 export function mergeVertical(board, dir) {
-  let newBoard = [];
   let cols = getCols(board);
 
   return flatVertical(
@@ -164,29 +116,28 @@ export function mergeVertical(board, dir) {
       let lastNum;
 
       col.forEach((tile, tileIdx) => {
-        if (tile === null) {
-          return;
-        } else if (tile.value === lastNum) {
+        if (tile === null) { return }
+
+        if (tile.value === lastNum) {
           updatedCol[updatedCol.length - 1].value = tile.value * 2;
-          updatedCol[updatedCol.length - 1].from = colIdx + tileIdx * HEIGHT;
-          lastNum = 0;
+          updatedCol[updatedCol.length - 1].from = tileIdx * HEIGHT + colIdx;
+          lastNum = null;
         } else {
+          tile.from = tileIdx * HEIGHT + colIdx;
           updatedCol.push(tile);
+          console.log('from', tileIdx * HEIGHT + colIdx);
           lastNum = tile.value;
         }
       });
 
       let padding = new Array(HEIGHT - updatedCol.length).fill(null);
-      let outputCols =
-        updatedCol.length === HEIGHT
+      return updatedCol.length === HEIGHT
           ? updatedCol
-          : dir === "UP"
+          : dir === UP
           ? [...updatedCol, ...padding]
-          : dir === "DOWN"
+          : dir === DOWN
           ? [...padding, ...updatedCol]
           : null;
-
-      return outputCols;
     })
   );
 }

@@ -1,4 +1,4 @@
-import { flatVertical, getCols, generateBoard, addNewTile } from "./index";
+import { flatVertical, getCols, generateBoard } from "./index";
 
 const input = [0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 5, 0];
 

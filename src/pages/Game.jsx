@@ -10,15 +10,13 @@ export default function Game() {
 
   const handleAddNewTile = () => {
     setTiles((prevState) => {
-      console.log("updated", addNewTile(prevState));
       return addNewTile(prevState);
     });
   };
 
   const handleMerge = (dir = "LEFT") => {
     setTiles((prevState) => {
-      let newState = mergeTiles(prevState, dir);
-      return newState;
+      return mergeTiles(prevState, dir);
     });
   };
 
@@ -34,12 +32,12 @@ export default function Game() {
 
   useKeyPress("ArrowUp", () => {
     handleMerge("UP");
-    handleAddNewTile();
+    // handleAddNewTile();
   });
 
   useKeyPress("ArrowDown", () => {
     handleMerge("DOWN");
-    handleAddNewTile();
+    // handleAddNewTile();
   });
 
   useEffect(() => {
