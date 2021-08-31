@@ -12,3 +12,16 @@
   color: #766e65;
   transition: all 0.3s ease;
 }
+
+.populate {
+  animation: populate-tile .5s ease;
+}
+
+@keyframes populate-tile  {
+  from {
+    transform: scale(0);
+  }
+  top {
+    transform: scale(1);
+  }
+}

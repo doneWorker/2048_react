@@ -32,12 +32,12 @@ export default function Game() {
 
   useKeyPress("ArrowUp", () => {
     handleMerge("UP");
-    // handleAddNewTile();
+    handleAddNewTile();
   });
 
   useKeyPress("ArrowDown", () => {
     handleMerge("DOWN");
-    // handleAddNewTile();
+    handleAddNewTile();
   });
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function Game() {
           tiles.map((el, idx) => {
             return (
               el !== null && (
-                <Tile index={idx} key={idx} value={el.value} from={el.from} />
+                <Tile index={idx} key={idx} populated={el.populated} value={el.value} from={el.from} />
               )
             );
           })}

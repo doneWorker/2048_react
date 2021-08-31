@@ -121,11 +121,13 @@ export function mergeVertical(board, dir) {
         if (tile.value === lastNum) {
           updatedCol[updatedCol.length - 1].value = tile.value * 2;
           updatedCol[updatedCol.length - 1].from = tileIdx * HEIGHT + colIdx;
+          tile.populated = false;
+          tile.merged = false;
           lastNum = null;
         } else {
           tile.from = tileIdx * HEIGHT + colIdx;
+          tile.populated = false;
           updatedCol.push(tile);
-          console.log('from', tileIdx * HEIGHT + colIdx);
           lastNum = tile.value;
         }
       });
