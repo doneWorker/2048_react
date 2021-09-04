@@ -7,6 +7,12 @@ export const UP = "UP";
 export const RIGHT = "RIGHT";
 export const DOWN = "DOWN";
 export const LEFT = "LEFT";
+export const directions = {
+  UP: "UP",
+  RIGHT: "RIGHT",
+  DOWN: "DOWN",
+  LEFT: "LEFT",
+};
 export const TILE_VALUES = [2, 4];
 
 function getRandomIntInclusive(min, max) {
@@ -15,167 +21,109 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function copyArray(array) {
+  return JSON.parse(JSON.stringify(array));
+}
+
 export function getTilePosition(
-  index,
+  row,
+  col,
   boardSize = BOARD_SIZE,
   tileSize = TILE_SIZE,
   margin = TILE_OFFSET
 ) {
-  const w = boardSize / 4,
-    r = index % w,
-    c = Math.floor(index / w),
-    mx = margin * (r + 1),
-    my = margin * (c + 1);
+  let x = margin * (col + 1) + col * tileSize,
+    y = margin * (row + 1) + row * tileSize;
 
   return {
-    x: mx + r * tileSize,
-    y: my + c * tileSize,
+    x,
+    y,
   };
 }
 
-export function getCols(board) {
-  let cols = new Array(HEIGHT).fill(0).map(() => []);
+function transpose(a) {
+  var w = a.length || 0;
+  var h = a[0] instanceof Array ? a[0].length : 0;
 
-  board.forEach((item, idx) => {
-    cols[idx % WIDTH].push(item);
-  });
+  if (h === 0 || w === 0) {
+    return [];
+  }
 
-  return cols;
-}
+  var i,
+    j,
+    t = [];
 
-export function getRows(board) {
-  let rows = [];
-  let currentRow = [];
-  board.forEach((item, idx) => {
-    currentRow.push(item);
-    if ((idx + 1) % WIDTH === 0) {
-      rows.push(currentRow);
-      currentRow = [];
-    }
-  });
+  for (i = 0; i < h; i++) {
+    t[i] = [];
 
-  return rows;
-}
-
-export function flatVertical(cols) {
-  let out = new Array(WIDTH * HEIGHT);
-
-  cols.forEach((col, colIdx) => {
-    col.forEach((item, itemIdx) => {
-      out[colIdx + itemIdx * HEIGHT] = item;
-    });
-  });
-
-  return out;
-}
-
-// TODO: optimize merge
-export function generateBoard(width = WIDTH, height = HEIGHT) {
-  let out = [];
-  for (let i = 0; i < height; i++) {
-    for (let n = 0; n < width; n++) {
-      out.push(null);
+    for (j = 0; j < w; j++) {
+      t[i][j] = a[j][i];
     }
   }
 
-  return out;
+  return t;
+}
+
+export function generateBoard(width = WIDTH, height = HEIGHT) {
+  return new Array(height).fill(new Array(width).fill(null));
+}
+
+export function merge(board, dir) {
+  let score = 0;
+  const needTranspose = () => [directions.UP, directions.DOWN].includes(dir);
+  const needLeftPadding = () =>
+    [directions.DOWN, directions.RIGHT].includes(dir);
+
+  board = needTranspose() ? transpose(board) : board;
+  let output = [],
+    w = board[0].length;
+
+  board.forEach((row) => {
+    let newRow = [];
+    let prevTile = null;
+
+    row.forEach((tile) => {
+      if (tile === null) return;
+
+      if (tile === prevTile) {
+        newRow[newRow.length - 1] = tile * 2;
+        score += tile;
+      } else {
+        prevTile = tile;
+        newRow.push(tile);
+      }
+    });
+
+    let padding = new Array(w - newRow.length).fill(null);
+    needLeftPadding()
+      ? output.push([...padding, ...newRow])
+      : output.push([...newRow, ...padding]);
+  });
+
+  output = needTranspose() ? transpose(output) : output;
+  return [score, output];
 }
 
 export function getFreePlace(board) {
-  let freeCells = board.map((row, idx) => row === null && idx);
-  return freeCells[getRandomIntInclusive(0, freeCells.length - 1)];
+  let freeCells = [];
+  board.forEach((row, rowId) => {
+    row.forEach((col, colId) => {
+      if (col === null) freeCells.push([rowId, colId]);
+    });
+  });
+
+  let pos = freeCells[getRandomIntInclusive(0, freeCells.length - 1)];
+  return pos;
 }
 
-function getRandomTileValue() {
+export function getRandomTileValue() {
   return TILE_VALUES[getRandomIntInclusive(0, TILE_VALUES.length - 1)];
 }
 
 export function addNewTile(board) {
-  let index = getFreePlace(board);
-  let updated = [...board];
-  updated[index] = {
-    populated: true,
-    value: getRandomTileValue(),
-  };
+  let updated = copyArray(board);
+  let [row, col] = getFreePlace(updated);
+  updated[row][col] = getRandomTileValue();
 
   return updated;
-}
-
-export function mergeTiles(board, dir = LEFT) {
-  return dir === LEFT || dir === RIGHT
-    ? mergeHorizontal(board, dir)
-    : mergeVertical(board, dir);
-}
-
-export function mergeVertical(board, dir) {
-  let cols = getCols(board);
-  let score = 0;
-
-  let newBoard = flatVertical(
-    cols.map((col, colIdx) => {
-      let updatedCol = [];
-      let lastNum;
-
-      col.forEach((tile, tileIdx) => {
-        if (tile === null) {
-          return;
-        } else if (tile.value === lastNum) {
-          score += tile.value * 2;
-          updatedCol[updatedCol.length - 1].value = tile.value * 2;
-          updatedCol[updatedCol.length - 1].from = tileIdx * HEIGHT + colIdx;
-          tile.populated = false;
-          tile.merged = false;
-          lastNum = null;
-        } else {
-          tile.from = tileIdx * HEIGHT + colIdx;
-          tile.populated = false;
-          updatedCol.push(tile);
-          lastNum = tile.value;
-        }
-      });
-
-      let padding = new Array(HEIGHT - updatedCol.length).fill(null);
-      return updatedCol.length === HEIGHT
-        ? updatedCol
-        : dir === UP
-        ? [...updatedCol, ...padding]
-        : dir === DOWN
-        ? [...padding, ...updatedCol]
-        : null;
-    })
-  );
-
-  return [score, newBoard];
-}
-
-export function mergeHorizontal(board, dir) {
-  let newBoard = [];
-  let row = [];
-  let score = 0;
-
-  // move & merge
-  board.forEach((tile, idx) => {
-    if (tile !== null) {
-      // same tiles in row
-      if (row.length > 0 && tile.value === row[row.length - 1].value) {
-        score += tile.value * 2;
-        row[row.length - 1] = {
-          ...tile,
-          ...{ from: idx, value: tile.value * 2 },
-        };
-      } else {
-        row.push({ ...tile, ...{ from: idx } });
-      }
-    }
-
-    // last element in row
-    if ((idx + 1) % WIDTH === 0) {
-      let padding = new Array(WIDTH - row.length).fill(null);
-      row = dir === LEFT ? [...row, ...padding] : [...padding, ...row];
-      newBoard.push(row);
-      row = [];
-    }
-  });
-
-  return [score, newBoard.flat()];
 }

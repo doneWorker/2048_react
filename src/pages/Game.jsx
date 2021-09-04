@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-import { BOARD_SIZE, generateBoard, addNewTile, mergeTiles } from "../game";
+import {
+  BOARD_SIZE,
+  generateBoard,
+  addNewTile,
+  merge,
+  directions,
+} from "../game";
 import useKeyPress from "../hooks/useKeypress";
 import Header from "../components/Header";
 import Tile from "../components/Tile";
@@ -18,36 +24,36 @@ export default function Game() {
 
   const handleMerge = (dir) => {
     setTiles((prevState) => {
-      console.log("handleMerge");
-      let [points, tiles] = mergeTiles(prevState, dir);
-      console.log(`points: ${points}`);
+      let [points, tiles] = merge(prevState, dir);
       setScore((prevScore) => (prevScore += points));
       return tiles;
     });
   };
 
   useKeyPress("ArrowLeft", () => {
-    handleMerge("LEFT");
+    handleMerge(directions.LEFT);
     handleAddNewTile();
   });
 
   useKeyPress("ArrowRight", () => {
-    handleMerge("RIGHT");
+    handleMerge(directions.RIGHT);
     handleAddNewTile();
   });
 
   useKeyPress("ArrowUp", () => {
-    handleMerge("UP");
+    handleMerge(directions.UP);
     handleAddNewTile();
   });
 
   useKeyPress("ArrowDown", () => {
-    handleMerge("DOWN");
+    handleMerge(directions.DOWN);
     handleAddNewTile();
   });
 
   useEffect(() => {
-    handleAddNewTile();
+    setTiles((prevState) => {
+      return addNewTile(prevState);
+    });
   }, []);
 
   return (
@@ -55,18 +61,19 @@ export default function Game() {
       <Header score={score} />
       <Board size={BOARD_SIZE}>
         {tiles &&
-          tiles.map((el, idx) => {
-            return (
-              el !== null && (
-                <Tile
-                  index={idx}
-                  key={idx}
-                  populated={el.populated}
-                  value={el.value}
-                  from={el.from}
-                />
-              )
-            );
+          tiles.map((row, rowIdx) => {
+            return row.map((item, colIdx) => {
+              return (
+                item && (
+                  <Tile
+                    row={rowIdx}
+                    col={colIdx}
+                    value={item}
+                    key={rowIdx + colIdx}
+                  />
+                )
+              );
+            });
           })}
       </Board>
     </div>
