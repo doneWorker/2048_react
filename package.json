@@ -13,7 +13,7 @@
     "react-transition-group": "^4.4.2",
     "web-vitals": "^1.0.1"
   },
-  "homepage": "https://doneworker.github.io/2048_react/",
+  "homepage": "https://doneworker.github.io/2048_react",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
