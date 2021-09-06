@@ -1,18 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { CSSTransition } from "react-transition-group";
 import { getTilePosition } from "../game";
 
 import styles from "./Tile.module.css";
 
-export default function Tile({ row, col, value }) {
+function Tile(props) {
+  const { row, col, value, populated, prevPos } = props;
+  const [position, setPosition] = useState(getTilePosition(...prevPos));
+
+  useEffect(() => {
+    setPosition(() => {
+      setTimeout(() => setPosition(getTilePosition(row, col)), 10);
+      return getTilePosition(...prevPos);
+    });
+  }, [row, col, prevPos, setPosition]);
+
   return (
     <div
-      className={`${styles.tile}`}
+      className={`${styles.tile} ${populated ? styles.populate : ""}`}
       style={{
-        left: `${getTilePosition(row, col).x}px`,
-        top: `${getTilePosition(row, col).y}px`,
+        left: `${position.x}px`,
+        top: `${position.y}px`,
       }}
     >
       {value}
     </div>
   );
 }
+
+export default React.memo(Tile);

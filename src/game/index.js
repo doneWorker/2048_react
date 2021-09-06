@@ -3,10 +3,6 @@ export const TILE_SIZE = 180;
 export const TILE_OFFSET = 15;
 export const WIDTH = 4;
 export const HEIGHT = 4;
-export const UP = "UP";
-export const RIGHT = "RIGHT";
-export const DOWN = "DOWN";
-export const LEFT = "LEFT";
 export const directions = {
   UP: "UP",
   RIGHT: "RIGHT",
@@ -68,7 +64,21 @@ export function generateBoard(width = WIDTH, height = HEIGHT) {
   return new Array(height).fill(new Array(width).fill(null));
 }
 
+export function updatePrevPosition(board) {
+  return board.map((row, rowIdx) => {
+    return row.map((tile, colIdx) => {
+      if (tile?.prevPos) {
+        tile.prevPos = [rowIdx, colIdx];
+      }
+
+      return tile;
+    });
+  });
+}
+
 export function merge(board, dir) {
+  board = updatePrevPosition(copyArray(board));
+
   let score = 0;
   const needTranspose = () => [directions.UP, directions.DOWN].includes(dir);
   const needLeftPadding = () =>
@@ -85,9 +95,16 @@ export function merge(board, dir) {
     row.forEach((tile) => {
       if (tile === null) return;
 
-      if (tile === prevTile) {
-        newRow[newRow.length - 1] = tile * 2;
-        score += tile;
+      tile.populated = false;
+
+      if (prevTile && tile.value === prevTile.value) {
+        newRow[newRow.length - 1] = {
+          ...tile,
+          value: tile.value * 2,
+          prevPos: prevTile.prevPos,
+        };
+        console.log("prevPos from merge", tile.prevPos);
+        score += tile.value;
       } else {
         prevTile = tile;
         newRow.push(tile);
@@ -123,7 +140,11 @@ export function getRandomTileValue() {
 export function addNewTile(board) {
   let updated = copyArray(board);
   let [row, col] = getFreePlace(updated);
-  updated[row][col] = getRandomTileValue();
+  updated[row][col] = {
+    value: getRandomTileValue(),
+    prevPos: [row, col],
+    populated: true,
+  };
 
   return updated;
 }

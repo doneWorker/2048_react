@@ -6,6 +6,7 @@ import {
   addNewTile,
   merge,
   directions,
+  updatePrevPosition,
 } from "../game";
 import useKeyPress from "../hooks/useKeypress";
 import Header from "../components/Header";
@@ -68,7 +69,9 @@ export default function Game() {
                   <Tile
                     row={rowIdx}
                     col={colIdx}
-                    value={item}
+                    populated={item.populated}
+                    prevPos={item.prevPos}
+                    value={item.value}
                     key={rowIdx + colIdx}
                   />
                 )

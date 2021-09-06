@@ -14,14 +14,15 @@
 }
 
 .populate {
-  animation: populate-tile .5s ease;
+  transform: scale(0);
+  animation: populate-tile 0.3s 0.3s forwards;
 }
 
-@keyframes populate-tile  {
+@keyframes populate-tile {
   from {
     transform: scale(0);
   }
-  top {
+  to {
     transform: scale(1);
   }
 }
