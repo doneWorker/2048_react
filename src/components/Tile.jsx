@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { CSSTransition } from "react-transition-group";
 import { getTilePosition } from "../game";
 
 import styles from "./Tile.module.css";
@@ -17,7 +16,9 @@ function Tile(props) {
 
   return (
     <div
-      className={`${styles.tile} ${populated ? styles.populate : ""}`}
+      className={`${styles.tile} ${
+        populated ? styles.populate : ""
+      } tile tile-${value}`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,

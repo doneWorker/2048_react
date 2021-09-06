@@ -103,7 +103,6 @@ export function merge(board, dir) {
           value: tile.value * 2,
           prevPos: prevTile.prevPos,
         };
-        console.log("prevPos from merge", tile.prevPos);
         score += tile.value;
       } else {
         prevTile = tile;

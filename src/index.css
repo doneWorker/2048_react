@@ -3,6 +3,55 @@
   --cellBg: #ccc1b3;
   --tileBg: #ece4da;
   --tileColor: #766e65;
+  --tile4Bg: #ede0c8;
+  --tile8Bg: #f1b278;
+  --tile16Bg: #f59662;
+  --tile32Bg: #f57d5f;
+  --tile64Bg: #f55e3a;
+  --tile128Bg: #eccf73;
+  --tile256Bg: #edcb61;
+  --tile512Bg: #edc750;
+  --tile1024Bg: #edc750;
+  --tile2048Bg: #edc750;
+}
+
+.tile {
+  color: white;
+}
+.tile-2 {
+  background-color: #ede4da;
+  color: #766e65;
+}
+.tile-4 {
+  background-color: #ede0c8;
+  color: #766e65;
+}
+.tile-8 {
+  background-color: #f1b278;
+}
+.tile-16 {
+  background-color: #f59662;
+}
+.tile-32 {
+  background-color: #f57d5f;
+}
+.tile-64 {
+  background-color: #f55e3a;
+}
+.tile-128 {
+  background-color: #eccf73;
+}
+.tile-256 {
+  background-color: #edcb61;
+}
+.tile-512 {
+  background-color: #edc750;
+}
+.tile-1024 {
+  background-color: #edc750;
+}
+.tile-2048 {
+  background-color: #edc750;
 }
 
 body {

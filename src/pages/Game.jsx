@@ -6,7 +6,6 @@ import {
   addNewTile,
   merge,
   directions,
-  updatePrevPosition,
 } from "../game";
 import useKeyPress from "../hooks/useKeypress";
 import Header from "../components/Header";
