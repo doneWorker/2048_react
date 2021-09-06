@@ -76,6 +76,7 @@ export function updatePrevPosition(board) {
   });
 }
 
+// move'n merge
 export function merge(board, dir) {
   board = updatePrevPosition(copyArray(board));
 
@@ -104,6 +105,7 @@ export function merge(board, dir) {
           prevPos: prevTile.prevPos,
         };
         score += tile.value;
+        prevTile = null;
       } else {
         prevTile = tile;
         newRow.push(tile);
