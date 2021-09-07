@@ -17,6 +17,13 @@ export default function Game() {
   const [tiles, setTiles] = useState(generateBoard());
   const [score, setScore] = useState(0);
 
+  const handleNewGame = () => {
+    setTiles(generateBoard());
+    setScore(0);
+
+    handleAddNewTile();
+  };
+
   const handleAddNewTile = useCallback(() => {
     setTiles((prevState) => {
       return addNewTile(prevState);
@@ -69,14 +76,12 @@ export default function Game() {
   );
 
   useEffect(() => {
-    setTiles((prevState) => {
-      return addNewTile(prevState);
-    });
+    handleNewGame();
   }, []);
 
   return (
     <div>
-      <Header score={score} />
+      <Header score={score} onNewGame={handleNewGame} />
       <Board size={BOARD_SIZE}>
         {tiles &&
           tiles.map((row, rowIdx) => {
