@@ -17,8 +17,19 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+// only for copying 2d
 function copyArray(array) {
-  return JSON.parse(JSON.stringify(array));
+  let newArray = [];
+  for (let i = 0; i < array.length; i++) {
+    let newSubArray = [];
+    for (let j = 0; j < array[i].length; j++) {
+      newSubArray.push(array[i][j]);
+    }
+
+    newArray.push(newSubArray);
+  }
+
+  return newArray;
 }
 
 export function getTilePosition(
@@ -136,7 +147,7 @@ export function merge(board, dir) {
         newRow[newRow.length - 1] = {
           ...tile,
           value: tile.value * 2,
-          prevPos: prevTile.prevPos,
+          prevPos: needLeftPadding() ? prevTile.prevPos : tile.prevPos,
         };
         score += tile.value;
         prevTile = null;
