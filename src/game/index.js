@@ -76,6 +76,40 @@ export function updatePrevPosition(board) {
   });
 }
 
+export function canMove(board, dir) {
+  board = copyArray(board);
+  let isLeftDirection = [directions.LEFT, directions.UP].includes(dir);
+  let needTranspose = [directions.DOWN, directions.UP].includes(dir);
+
+  if (needTranspose) {
+    board = transpose(board);
+  }
+
+  const totalRows = board.length;
+  const totalCols = board[0].length;
+
+  for (let rIdx = 0; rIdx < totalRows; rIdx++) {
+    let currentRow = !isLeftDirection ? board[rIdx].reverse() : board[rIdx];
+    let prevNumber = null;
+    let prevTile;
+    let isFirstEmpty = currentRow[0] === null;
+
+    for (let cIdx = 0; cIdx < totalCols; cIdx++) {
+      let tile = currentRow[cIdx];
+      if (tile !== null) {
+        if (isFirstEmpty && cIdx > 0) return true;
+        if (prevNumber === tile.value) return true;
+        if (prevTile === null) return true;
+        prevNumber = tile.value;
+      }
+
+      prevTile = tile;
+    }
+  }
+
+  return false;
+}
+
 // move'n merge
 export function merge(board, dir) {
   board = updatePrevPosition(copyArray(board));

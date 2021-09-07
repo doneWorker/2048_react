@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import {
   BOARD_SIZE,
   generateBoard,
   addNewTile,
   merge,
+  canMove,
   directions,
 } from "../game";
 import useKeyPress from "../hooks/useKeypress";
@@ -16,39 +17,56 @@ export default function Game() {
   const [tiles, setTiles] = useState(generateBoard());
   const [score, setScore] = useState(0);
 
-  const handleAddNewTile = () => {
+  const handleAddNewTile = useCallback(() => {
     setTiles((prevState) => {
       return addNewTile(prevState);
     });
-  };
+  }, [setTiles]);
 
-  const handleMerge = (dir) => {
-    setTiles((prevState) => {
-      let [points, tiles] = merge(prevState, dir);
-      setScore((prevScore) => (prevScore += points));
-      return tiles;
-    });
-  };
+  const handleMerge = useCallback(
+    (dir) => {
+      if (!canMove(tiles, dir)) {
+        return;
+      }
 
-  useKeyPress("ArrowLeft", () => {
-    handleMerge(directions.LEFT);
-    handleAddNewTile();
-  });
+      setTiles((prevState) => {
+        let [points, tiles] = merge(prevState, dir);
+        setScore((prevScore) => (prevScore += points));
+        return tiles;
+      });
 
-  useKeyPress("ArrowRight", () => {
-    handleMerge(directions.RIGHT);
-    handleAddNewTile();
-  });
+      handleAddNewTile();
+    },
+    [setTiles, handleAddNewTile, tiles]
+  );
 
-  useKeyPress("ArrowUp", () => {
-    handleMerge(directions.UP);
-    handleAddNewTile();
-  });
+  useKeyPress(
+    "ArrowLeft",
+    useCallback(() => {
+      handleMerge(directions.LEFT);
+    }, [handleMerge])
+  );
 
-  useKeyPress("ArrowDown", () => {
-    handleMerge(directions.DOWN);
-    handleAddNewTile();
-  });
+  useKeyPress(
+    "ArrowRight",
+    useCallback(() => {
+      handleMerge(directions.RIGHT);
+    }, [handleMerge])
+  );
+
+  useKeyPress(
+    "ArrowUp",
+    useCallback(() => {
+      handleMerge(directions.UP);
+    }, [handleMerge])
+  );
+
+  useKeyPress(
+    "ArrowDown",
+    useCallback(() => {
+      handleMerge(directions.DOWN);
+    }, [handleMerge])
+  );
 
   useEffect(() => {
     setTiles((prevState) => {
