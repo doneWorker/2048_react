@@ -13,22 +13,43 @@ import Header from "../components/Header";
 import Tile from "../components/Tile";
 import Board from "../components/Board";
 
+function loadLastSession() {
+  const state = localStorage.getItem("state");
+  return state ? JSON.parse(state) : null;
+}
+
+function saveSession(state) {
+  localStorage.setItem("state", JSON.stringify(state));
+}
+
 export default function Game() {
-  const [tiles, setTiles] = useState(generateBoard());
+  const [tiles, setTiles] = useState(null);
   const [score, setScore] = useState(0);
 
-  const handleNewGame = () => {
-    setTiles(generateBoard());
-    setScore(0);
-
-    handleAddNewTile();
-  };
+  const handleSaveGame = useCallback(() => {
+    saveSession({ tiles, score });
+  }, [tiles, score]);
 
   const handleAddNewTile = useCallback(() => {
     setTiles((prevState) => {
       return addNewTile(prevState);
     });
   }, [setTiles]);
+
+  const handleNewGame = useCallback(() => {
+    setTiles(() => generateBoard());
+    setScore(0);
+
+    handleAddNewTile();
+  }, [setScore, setTiles, handleAddNewTile]);
+
+  const handleContinueGame = useCallback(
+    (score, tiles) => {
+      setTiles(() => tiles);
+      setScore(score);
+    },
+    [setTiles, setScore]
+  );
 
   const handleMerge = useCallback(
     (dir) => {
@@ -76,8 +97,26 @@ export default function Game() {
   );
 
   useEffect(() => {
-    handleNewGame();
-  }, []);
+    const lastSession = loadLastSession();
+
+    if (
+      lastSession !== null &&
+      lastSession?.tiles !== null &&
+      lastSession?.score !== null
+    ) {
+      handleContinueGame(lastSession.score, lastSession.tiles);
+    } else {
+      handleNewGame();
+    }
+  }, [handleNewGame, handleContinueGame]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleSaveGame);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleSaveGame);
+    };
+  }, [handleSaveGame]);
 
   return (
     <div>
