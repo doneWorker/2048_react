@@ -1,8 +1,8 @@
-export const BOARD_SIZE = 16;
 export const TILE_SIZE = 180;
 export const TILE_OFFSET = 15;
 export const WIDTH = 4;
 export const HEIGHT = 4;
+export const BOARD_SIZE = WIDTH * HEIGHT;
 export const directions = {
   UP: "UP",
   RIGHT: "RIGHT",

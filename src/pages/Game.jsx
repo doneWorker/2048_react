@@ -8,7 +8,7 @@ import {
   canMove,
   directions,
 } from "../game";
-import useKeyPress from "../hooks/useKeypress";
+import useKeyUp from "../hooks/useKeyUp";
 import Header from "../components/Header";
 import Tile from "../components/Tile";
 import Board from "../components/Board";
@@ -68,28 +68,28 @@ export default function Game() {
     [setTiles, handleAddNewTile, tiles]
   );
 
-  useKeyPress(
+  useKeyUp(
     "ArrowLeft",
     useCallback(() => {
       handleMerge(directions.LEFT);
     }, [handleMerge])
   );
 
-  useKeyPress(
+  useKeyUp(
     "ArrowRight",
     useCallback(() => {
       handleMerge(directions.RIGHT);
     }, [handleMerge])
   );
 
-  useKeyPress(
+  useKeyUp(
     "ArrowUp",
     useCallback(() => {
       handleMerge(directions.UP);
     }, [handleMerge])
   );
 
-  useKeyPress(
+  useKeyUp(
     "ArrowDown",
     useCallback(() => {
       handleMerge(directions.DOWN);
